@@ -31,33 +31,43 @@ def parse_to_better_csv(raw_data):
     return sb
 
 
-def load_data():
-    data = open(dir + "/data/lyrics2_0.txt", 'r', encoding='UTF-8').readlines()
+def __load_sp_data__(file):
+    data = open(dir + "/data/" + file, 'r', encoding='UTF-8').readlines()
     df = []
-    for line in data[1:10]:
-        entry = {}
-        index = line[0:line.index(",")]
-        line = line.replace(line[0:line.index(",")+1], "")
-        song = line[0:line.index(",")]
-        line = line.replace(line[0:line.index(",") + 1], "")
-        year = line[0:line.index(",")]
-        line = line.replace(line[0:line.index(",") + 1], "")
-        artist = line[0:line.index(",")]
-        line = line.replace(line[0:line.index(",") + 1], "")
-        genre = line[0:line.index(",")]
-        line = line.replace(line[0:line.index(",") + 1], "")
-        lyrics = line.replace("\n", "")
-        entry = {'index': index
-                 , 'song': song
-                 , 'year': year
-                 , 'artist': artist
-                 , 'genre': genre
-                 , 'lyrics': lyrics}
-        df.append(entry)
+    for line in data[1:]:
+        try:
+            entry = {}
+            index = line[0:line.index(",")]
+            line = line.replace(line[0:line.index(",")+1], "")
+            song = line[0:line.index(",")]
+            line = line.replace(line[0:line.index(",") + 1], "")
+            year = line[0:line.index(",")]
+            line = line.replace(line[0:line.index(",") + 1], "")
+            artist = line[0:line.index(",")]
+            line = line.replace(line[0:line.index(",") + 1], "")
+            genre = line[0:line.index(",")]
+            line = line.replace(line[0:line.index(",") + 1], "")
+            lyrics = line.replace("\n", "")
+            entry = {'index': index
+                     , 'song': song
+                     , 'year': year
+                     , 'artist': artist
+                     , 'genre': genre
+                     , 'lyrics': lyrics}
+            df.append(entry)
+        except:
+            print("An unexpected error occured. Skipped that line.")
+            print(line, len(df))
         # print(index, ";", song, ";", year, ";", artist, ";", genre, ";", lyrics)
     return df
 
-df = load_data()
+
+def load_data():
+    return __load_sp_data__("lyrics2_0.txt")
+
+
+def load_clean_data():
+    return __load_sp_data__("lyrics3_0.txt")
 
 if __name__ == '__main__':
     # raw_data = open(dir + "/data/lyrics.csv", 'r', encoding='UTF-8').readlines()
