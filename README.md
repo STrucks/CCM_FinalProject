@@ -1,4 +1,4 @@
-# CCM_FinalProject
+# CCM_FinalProject Christopher Strucks, Tristan Payer
 
 ## Study Proposal
 It came to our ears that modern song lyrics are said to uncreative. The goal of our study is to give an overview about the creativity of modern songs (songs later than 2000) versus old songs (before 2000). According to Mumford (2003), "creativity involves the production of novel, useful products". Based on this definition and on several creativity tests (Guilford's Test of Divergent Thinking (1967), ... ) we will define creativity metrics to compare old song lyrics and new song lyrics. Further we want to investigate if there is a significant difference between song genres in terms of creativity.
