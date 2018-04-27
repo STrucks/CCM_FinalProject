@@ -1,10 +1,3 @@
-"""
-clean the data and put it in a suitable dataframe
-
-data = {'}
-
-"""
-
 import os
 
 dir = os.path.dirname(__file__)
@@ -15,9 +8,20 @@ def parse_to_better_csv(raw_data):
     out = open(dir + "/data/lyrics2_0.txt", 'w', encoding='UTF-8')
 
     sb = raw_data[0]
+    song_nr = 1
     for index, line in enumerate(raw_data[1:]):
         if index % 10000 == 0:
             print(index)
+        # brave idea: if the line starts with the index+1, a new song began:
+        # print(str(song_nr), line[0:6])
+        if str(song_nr) in line[0:6]:
+            sb += "\n"
+            out.writelines(sb)
+            sb = line.replace("\n", " ")
+            song_nr += 1
+        else:
+            sb += line.replace("\n", " ")
+        """
         if len(line) <= 3:
             sb += line.replace("\n", " ")
         elif line[-1] == "\n" and line[-2] == "\"" and line[-3] != "\"":
@@ -26,8 +30,7 @@ def parse_to_better_csv(raw_data):
             sb = ""
         else:
             sb += line.replace("\n", " ")
-    print("write to file")
-
+        """
     return sb
 
 
@@ -36,7 +39,6 @@ def __load_sp_data__(file):
     df = []
     for line in data[1:]:
         try:
-            entry = {}
             index = line[0:line.index(",")]
             line = line.replace(line[0:line.index(",")+1], "")
             song = line[0:line.index(",")]
@@ -84,5 +86,6 @@ if __name__ == '__main__':
     Access the attributes with the keys, like df[0]['lyrics'] to get the lyrics of the first song.
     """
     print(msg)
+    print(parse_to_better_csv(open(dir + "/data/lyrics.csv", 'r', encoding='UTF-8'). readlines()))
 
 
