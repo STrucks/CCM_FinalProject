@@ -17,25 +17,16 @@ def parse_to_better_csv(raw_data):
         if str(song_nr) in line[0:6]:
             sb += "\n"
             out.writelines(sb)
-            sb = line.replace("\n", " ")
+            sb = line.replace("\n", "")
             song_nr += 1
         else:
             sb += line.replace("\n", " ")
-        """
-        if len(line) <= 3:
-            sb += line.replace("\n", " ")
-        elif line[-1] == "\n" and line[-2] == "\"" and line[-3] != "\"":
-            sb += line
-            out.writelines(sb)
-            sb = ""
-        else:
-            sb += line.replace("\n", " ")
-        """
     return sb
 
 
 def __load_sp_data__(file):
     data = open(dir + "/data/" + file, 'r', encoding='UTF-8').readlines()
+    bl = [line.replace("\n", "") for line in open(dir + "/data/blacklist_genre.txt", 'r', encoding='UTF-8').readlines()]
     df = []
     for line in data[1:]:
         try:
@@ -48,6 +39,8 @@ def __load_sp_data__(file):
             artist = line[0:line.index(",")]
             line = line.replace(line[0:line.index(",") + 1], "")
             genre = line[0:line.index(",")]
+            if genre in bl:
+                continue
             line = line.replace(line[0:line.index(",") + 1], "")
             lyrics = line.replace("\n", "")
             entry = {'index': index
@@ -59,7 +52,7 @@ def __load_sp_data__(file):
             df.append(entry)
         except:
             print("An unexpected error occured. Skipped that line.")
-            print(line, len(df))
+            #print(line, len(df))
         # print(index, ";", song, ";", year, ";", artist, ";", genre, ";", lyrics)
     return df
 
