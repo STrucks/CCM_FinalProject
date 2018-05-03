@@ -5,7 +5,7 @@ dir = import_data.dir
 Preprocess the song data:
 -> clean data 
     |
-    -> remove char like !?+.,:;-_<>&%()'"[]
+    -> remove char like !?+.,:;-_<>&%()"[]
     |
     -> remove non english songs
     |
@@ -23,7 +23,7 @@ def is_ascii(c):
 
 
 def clean_data(df):
-    invalid_chars = "!?+.,:;-_<>&%()[]\'\""
+    invalid_chars = "!?+.,:;-_<>&%()[]\""
     invalid_lyrics = [" ", "", "  "]
     print(len(df))
     invalid_entries = []

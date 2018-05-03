@@ -96,7 +96,7 @@ if __name__ == '__main__':
             nr_song_year[(entry['year'])] += 1
 
     # print(nr_song_artist)
-    # print(nr_song_genre)
+    print("\n".join(nr_song_genre))
     sorted_years = []
     sorted_keys = []
     for key in sorted(nr_song_year):

@@ -17,15 +17,18 @@ def parse_to_better_csv(raw_data):
         if str(song_nr) in line[0:6]:
             sb += "\n"
             out.writelines(sb)
-            sb = line.replace("\n", "")
+            sb = line.replace("\n", " codenewline ")
             song_nr += 1
         else:
-            sb += line.replace("\n", " ")
+            sb += line.replace("\n", " codenewline ")
     return sb
 
 
-def __load_sp_data__(file):
-    data = open(dir + "/data/" + file, 'r', encoding='UTF-8').readlines()
+def __load_sp_data__(file, n=-1):
+    if n == -1:
+        data = open(dir + "/data/" + file, 'r', encoding='UTF-8').readlines()
+    else:
+        data = open(dir + "/data/" + file, 'r', encoding='UTF-8').readlines()[0:n+1]
     bl = [line.replace("\n", "") for line in open(dir + "/data/blacklist_genre.txt", 'r', encoding='UTF-8').readlines()]
     df = []
     for line in data[1:]:
@@ -52,7 +55,7 @@ def __load_sp_data__(file):
             df.append(entry)
         except:
             print("An unexpected error occured. Skipped that line.")
-            #print(line, len(df))
+            # print(line, len(df))
         # print(index, ";", song, ";", year, ";", artist, ";", genre, ";", lyrics)
     return df
 
@@ -61,8 +64,11 @@ def load_data():
     return __load_sp_data__("lyrics2_0.txt")
 
 
-def load_clean_data():
-    return __load_sp_data__("lyrics3_0.txt")
+def load_clean_data(n=-1):
+    if n == -1:
+        return __load_sp_data__("lyrics3_0.txt")
+    else:
+        return __load_sp_data__("lyrics3_0.txt", n=n)
 
 if __name__ == '__main__':
     # raw_data = open(dir + "/data/lyrics.csv", 'r', encoding='UTF-8').readlines()
