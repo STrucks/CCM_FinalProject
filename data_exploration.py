@@ -72,7 +72,7 @@ Year distribution:
 
 
 if __name__ == '__main__':
-    df = import_data.load_clean_data()
+    df = import_data.load_balanced_data()
     # there are some mistakes in the data, I fixed some of them by hand. (These mistakes were not produced by the preprocessing, eg. no artist, ect)
     # show basic stats: amount of songs per artist, genre, time (before 2000 and after)
     nr_song_artist = {}

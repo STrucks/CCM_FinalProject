@@ -46,6 +46,8 @@ def __load_sp_data__(file, n=-1):
                 continue
             line = line.replace(line[0:line.index(",") + 1], "")
             lyrics = line.replace("\n", "")
+            if len(lyrics.replace("codenewline", "").split(" ")) < 5:
+                continue
             entry = {'index': index
                      , 'song': song
                      , 'year': year
@@ -70,6 +72,32 @@ def load_clean_data(n=-1):
     else:
         return __load_sp_data__("lyrics3_0.txt", n=n)
 
+
+def load_balanced_data():
+    return __load_sp_data__("lyrics3_0_balanced.txt")
+
+def balance_data():
+    data = load_clean_data()
+    # divide data by year:
+    old = [d for d in data if int(d['year']) < 2000]
+    new = [d for d in data if int(d['year']) >= 2000]
+    samplesize = min(1000, len(old), len(new))
+    import random
+    random.shuffle(new)
+    random.shuffle(old)
+    new = new[0:samplesize]
+    old = old[0:samplesize]
+    # save the new data set:
+    out = open("data/lyrics3_0_balanced.txt", 'w')
+    for entry in old:
+        out.write(entry['index'] + "," + entry['song'] + "," + entry['year'] + "," + entry['artist'] + "," + entry[
+            'genre'] + "," + entry['lyrics'] + "\n")
+    for entry in new:
+        out.write(entry['index'] + "," + entry['song'] + "," + entry['year'] + "," + entry['artist'] + "," + entry[
+            'genre'] + "," + entry['lyrics'] + "\n")
+
+    print(old[0])
+
 if __name__ == '__main__':
     # raw_data = open(dir + "/data/lyrics.csv", 'r', encoding='UTF-8').readlines()
     # load_data()
@@ -85,6 +113,9 @@ if __name__ == '__main__':
     Access the attributes with the keys, like df[0]['lyrics'] to get the lyrics of the first song.
     """
     print(msg)
-    print(parse_to_better_csv(open(dir + "/data/lyrics.csv", 'r', encoding='UTF-8'). readlines()))
+    # print(parse_to_better_csv(open(dir + "/data/lyrics.csv", 'r', encoding='UTF-8'). readlines()))
+    balance_data()
+
+
 
 

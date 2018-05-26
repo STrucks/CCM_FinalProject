@@ -22,6 +22,14 @@ def extract(data):
         _data_.append([words[0].lower(), ph])
 
     phonemes_db = _data_
+
+    artists = {}
+    for entry in data:
+        if entry['artist'] not in artists:
+            artists[entry['artist']] = entry['lyrics'].replace("\"", "").replace(" codenewline", "")
+        else:
+            artists[entry['artist']] += " " + entry['lyrics'].replace("\"", "").replace(" codenewline", "")
+
     # start feature extraction:
     features = []
     for entry in data:
@@ -36,6 +44,7 @@ def extract(data):
         # proportion unique words:
         prop_unique_words = len(set(words))/len(words)
         row.append(str(prop_unique_words))
+        """
         # rhymes:
         rhyme_score = 0
         song_lines = entry['lyrics'].split(" codenewline ")
@@ -72,8 +81,22 @@ def extract(data):
             #print(rhyme_score)
         print(";".join(row))
         row.append(str(rhyme_score))
+        """
+        # total words of a artist:
+        row.append(str(len(artists[entry['artist']].split(" "))))
+        # unique words across artist:
+        row.append(str(len(set(artists[entry['artist']].split(" ")))))
+        # unique words in that song:
+
+
+
+
+
+        print(row)
         out.write(str(entry['index']) + ";" + ";".join(row) + "\n")
         features.append(row)
+
+
 
     print(features)
     return features
@@ -81,7 +104,7 @@ def extract(data):
 
 if __name__ == '__main__':
     t0 = time.clock()
-    df = import_data.load_clean_data(n=100)
+    df = import_data.load_balanced_data()
     print(time.clock() - t0)
     t0 = time.clock()
     extract(df)
