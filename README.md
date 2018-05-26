@@ -24,9 +24,9 @@ This evaluation would be the same for the creativity difference between genres. 
 * correlation between success and creativity (? if time is left)
 
 ## Creativity measures:
-* number unique words across song (higher better)
-* number unique words across artist (higher better)
-* number unique words across genre (higher better)
+* number unique words across song (higher better) ✔️
+* number unique words across artist (higher better) ✔️
+* number unique words across genre (higher better) ✔️
 * average rhyme length (higher better)
 * number filler words (eg. "Ohh", "Yeah", "Baby", "Uhh", "Ahh") (lower better)
 * number of topics across song (maybe TextRank or tf Idf, LDA) (maybe take this out)
@@ -45,5 +45,3 @@ Guilford, J. P. (1967). Creativity: Yesterday, today and tomorrow. The Journal o
 Mihalcea, R., & Tarau, P. (2004). Textrank: Bringing order into text. In Proceedings of the 2004 conference on empirical methods in natural language processing.
 
 Sparck Jones, K. (1972). A statistical interpretation of term specificity and its application in retrieval. Journal of documentation, 28(1), 11-21.
-
-
