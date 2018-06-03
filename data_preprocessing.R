@@ -3,11 +3,14 @@ library(textcat)
 library(tidyr)
 library(tidytext)
 library(stringr)
+library(wordcloud)
+library(RColorBrewer) 
+
 
 
 # TODO: look again over the filtering of the data.
 # watch for: year, language, strange artist(just numbers, just one song, too many songs), duplicate artists(beyonce = beyonce-knowles)
-data <- read.csv("../lyrics.csv")
+data <- read.csv("./data/lyrics.csv")
 
 # remove outlier years
 data <- data %>%
@@ -42,6 +45,16 @@ barplot(genre$n, names.arg = genre$genre, main = "Number of songs per genre")
 songs_per_artist <- data %>%
   count(artist)
 
+# Creating a word cloud with the 100 most used songs (without stopwords) in the dataset
+pal <- brewer.pal(8,"Spectral")
+layout(matrix(c(1, 2), nrow=2), heights=c(1, 4))
+par(mar=rep(0, 4))
+plot.new()
+text(x=0.5, y=0.5, "Title of my first plot")
+wordcloud <- tidy_data %>%
+  anti_join(stop_words) %>%
+  count(word) %>%
+  with(wordcloud(word, n, max.words = 100, scale = c(4,.9), random.color=T, colors = pal, title="title"))
 
 #############################################################################
 #                   Descriptive statistics from the Readme                  #
@@ -77,3 +90,13 @@ num_words_genre <- tidy_data %>%
 mean_num_words_genre <- mean(num_words_genre$num_words)
 stdev_num_words_genre <- sd(num_words_genre$num_words)
 
+# get the number of filler words 
+# create a vector with filler words
+fillers <- c("ohhh", "ohh","oh",  "yeah", "baby", "babe", "uhhh", "uhh", "uh", "ahh","ahhh", "ah", "na" ,"naa", "doo", 
+             "la", "lala", "woo", "woh", "hoo", "da", "ya", "yo", "yoo", "ladiada", "whoa", "bam")
+
+
+num_filler_words_songs <- tidy_data %>%
+  filter(word %in% fillers) %>%
+  group_by(song)%>%
+  summarise(num_filler_words = n())
