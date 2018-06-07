@@ -27,8 +27,8 @@ This evaluation would be the same for the creativity difference between genres. 
 * number unique words across song (higher better) ✔️
 * number unique words across artist (higher better) ✔️
 * number unique words across genre (higher better) ✔️
-* average rhyme length (higher better)
-* number filler words (eg. "Ohh", "Yeah", "Baby", "Uhh", "Ahh") (lower better)
+* average rhyme length (higher better) (✔️)
+* number filler words (eg. "Ohh", "Yeah", "Baby", "Uhh", "Ahh") (lower better) ✔️
 * number of topics across song (maybe TextRank or tf Idf, LDA) (maybe take this out)
 * number topics across artist (higher better)
 
