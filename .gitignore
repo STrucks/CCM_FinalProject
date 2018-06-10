@@ -1,5 +1,9 @@
 # project specific
 lyrics.csv
+song.txt
+
+# R stuff
+.Rhistory
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
