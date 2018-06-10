@@ -12,36 +12,38 @@ wordcloud <- tidy_data %>%
 dev.off()
 
 
-png(filename = "./imgs/rock_wc.png", width=12, height=8, units="in", res=300)
+png(filename = "./imgs/metal_wc.png", width=12, height=8, units="in", res=300)
 wordcloud_rock <- tidy_data %>%
   anti_join(stop_words) %>%
-  
+  filter(genre=="Metal") %>%
   count(word) %>%
   with(wordcloud(word, n, max.words = 100, scale = c(4,.9), random.color=T, colors = pal))
 dev.off()
 
 
+png(filename = "./imgs/hip_hop_wc.png", width=12, height=8, units="in", res=300)
+wordcloud_rock <- tidy_data %>%
+  anti_join(stop_words) %>%
+  filter(genre=="Hip-Hop") %>%
+  count(word) %>%
+  with(wordcloud(word, n, max.words = 100, scale = c(4,.9), random.color=T, colors = pal))
+dev.off()
 
 
-
-
-
-
-
-
-for(genre in genres){
-  # make room for the title and add title to plot
-  layout(matrix(c(1, 2), nrow=2), heights=c(1, 4))
-  par(mar=rep(0, 4))
-  plot.new()
-  text(x=0.5, y=0.5, genre)
+# automating the process of creating wordclouds
+genres <- unique(data$genre)
+for(genre_ in genres){
+  # open png device
+  png(filename = paste("imgs/", genre_, "_wc.png", sep=""), width=12, height=8, units="in", res=300)
   
   # add actiul wordcloud to plot
   wordcloud <- tidy_data %>%
     anti_join(stop_words) %>%
-    filter(genre == genre) %>%
+    filter(genre == genre_) %>%
     count(word) %>%
     with(wordcloud(word, n, max.words = 100, scale = c(4,.9), random.color=T, colors = pal))
   
-  #TODO: save plots
+  # save plots
+  dev.off()
 }
+
