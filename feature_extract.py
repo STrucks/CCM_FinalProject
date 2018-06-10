@@ -110,15 +110,14 @@ def tf_idf(data):
     for entry in data:
         row = []
         entry['lyrics'] = entry['lyrics'].replace("\"", "")
-        lyrics = entry['lyrics']
-        lyrics.replace(" codenewline", "")
+        lyrics = entry['lyrics'].replace(" codenewline", "")
         bloblist.append(tb(lyrics))
 
     for i, blob in enumerate(bloblist):
         print("Top words in document {}".format(i + 1))
         scores = {word: tfidf(word, blob, bloblist) for word in blob.words}
         sorted_words = sorted(scores.items(), key=lambda x: x[1], reverse=True)
-        out.write(data[i]['index'])
+        out.write(data[i]['index'] + ";" + data[i]['year'] + ";" + data[i]['genre'])
         for word, score in sorted_words[:3]:
             print("\tWord: {}, TF-IDF: {}".format(word, round(score, 5)))
             out.write(";" + word + ";" + str(round(score, 5)))
@@ -148,10 +147,49 @@ def tfidf(word, blob, bloblist):
     return tf(word, blob) * idf(word, bloblist)
 
 
+def unigram_features(data):
+    # first create a dict where every word gets an unique index
+    unigram_count = {}
+    index = 0
+    for entry in data:
+        entry['lyrics'] = entry['lyrics'].replace("\"", "")
+        lyrics = entry['lyrics'].replace(" codenewline", "")
+        for word in lyrics.split(" "):
+            if word not in unigram_count:
+                unigram_count[word] = 1
+                index += 1
+            else:
+                unigram_count[word] += 1
+
+    # remove words that dont occur much:
+    unigram_index = {}
+    index = 0
+    for entry in unigram_count:
+        if unigram_count[entry] >= 5:
+            unigram_index[entry] = index
+            index += 1
+
+    print(unigram_index)
+
+    out = open("data/features.txt", 'w')
+    for entry in data:
+        entry['lyrics'] = entry['lyrics'].replace("\"", "")
+        lyrics = entry['lyrics'].replace(" codenewline", "")
+        row = [0] * len(unigram_index)
+        for word in lyrics.split(" "):
+            if word in unigram_index:
+                row[unigram_index[word]] += 1
+            else:
+                continue
+        out.write(";".join([str(w) for w in row]) + "\n")
+    print(len(unigram_index))
+
+
+
 if __name__ == '__main__':
     t0 = time.clock()
     df = import_data.load_balanced_data()
     print(time.clock() - t0)
     t0 = time.clock()
-    tf_idf(df)
+    unigram_features(df)
     print(time.clock() - t0)
