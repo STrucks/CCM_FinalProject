@@ -47,3 +47,21 @@ for(genre_ in genres){
   dev.off()
 }
 
+
+# wordcloud for older songs
+png(filename = "./imgs/old_wc.png", width=12, height=8, units="in", res=300)
+wordcloud_old <- tidy_data %>%
+  anti_join(stop_words) %>%
+  filter(year < 2000) %>%
+  count(word) %>%
+  with(wordcloud(word, n, max.words = 100, scale = c(4,.9), random.color=T, colors = pal))
+dev.off()
+
+# wordcloud for newer songs
+png(filename = "./imgs/new_wc.png", width=12, height=8, units="in", res=300)
+wordcloud_new <- tidy_data %>%
+  anti_join(stop_words) %>%
+  filter(year > 2000) %>%
+  count(word) %>%
+  with(wordcloud(word, n, max.words = 100, scale = c(4,.9), random.color=T, colors = pal))
+dev.off()
