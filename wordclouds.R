@@ -3,10 +3,31 @@ library(wordcloud)
 library(RColorBrewer) 
 
 pal <- brewer.pal(8,"Spectral")
+
+png(filename = "./imgs/allsong_wc.png", width=12, height=8, units="in", res=300)
 wordcloud <- tidy_data %>%
   anti_join(stop_words) %>%
   count(word) %>%
   with(wordcloud(word, n, max.words = 100, scale = c(4,.9), random.color=T, colors = pal))
+dev.off()
+
+
+png(filename = "./imgs/rock_wc.png", width=12, height=8, units="in", res=300)
+wordcloud_rock <- tidy_data %>%
+  anti_join(stop_words) %>%
+  
+  count(word) %>%
+  with(wordcloud(word, n, max.words = 100, scale = c(4,.9), random.color=T, colors = pal))
+dev.off()
+
+
+
+
+
+
+
+
+
 
 for(genre in genres){
   # make room for the title and add title to plot
