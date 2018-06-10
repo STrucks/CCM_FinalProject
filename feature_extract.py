@@ -1,6 +1,7 @@
 import import_data
 import time
-
+import math
+from textblob import TextBlob as tb
 
 def extract(data):
     out = open("data/features.txt", 'w')
@@ -92,6 +93,7 @@ def extract(data):
 
 
 
+
         print(row)
         out.write(str(entry['index']) + ";" + ";".join(row) + "\n")
         features.append(row)
@@ -101,11 +103,55 @@ def extract(data):
     print(features)
     return features
 
+def tf_idf(data):
+    out = open("data/features.txt", 'w')
+    features = []
+    bloblist = []
+    for entry in data:
+        row = []
+        entry['lyrics'] = entry['lyrics'].replace("\"", "")
+        lyrics = entry['lyrics']
+        lyrics.replace(" codenewline", "")
+        bloblist.append(tb(lyrics))
+
+    for i, blob in enumerate(bloblist):
+        print("Top words in document {}".format(i + 1))
+        scores = {word: tfidf(word, blob, bloblist) for word in blob.words}
+        sorted_words = sorted(scores.items(), key=lambda x: x[1], reverse=True)
+        out.write(data[i]['index'])
+        for word, score in sorted_words[:3]:
+            print("\tWord: {}, TF-IDF: {}".format(word, round(score, 5)))
+            out.write(";" + word + ";" + str(round(score, 5)))
+        out.write("\n")
+
+idfs = {}
+
+def tf(word, blob):
+    return blob.words.count(word) / len(blob.words)
+
+
+def n_containing(word, bloblist):
+    return sum(1 for blob in bloblist if word in blob.words)
+
+
+def idf(word, bloblist):
+    if word in idfs:
+        return idfs[word]
+    else:
+        idfs[word] = math.log(len(bloblist) / (1 + n_containing(word, bloblist)))
+        return idfs[word]
+"""
+def idf(word, bloblist):
+    return math.log(len(bloblist) / (1 + n_containing(word, bloblist)))
+"""
+def tfidf(word, blob, bloblist):
+    return tf(word, blob) * idf(word, bloblist)
+
 
 if __name__ == '__main__':
     t0 = time.clock()
     df = import_data.load_balanced_data()
     print(time.clock() - t0)
     t0 = time.clock()
-    extract(df)
+    tf_idf(df)
     print(time.clock() - t0)
