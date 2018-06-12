@@ -33,7 +33,7 @@ def extract(data):
 
     # start feature extraction:
     features = []
-    for entry in data:
+    for index, entry in enumerate(data):
         row = []
         entry['lyrics'] = entry['lyrics'].replace("\"", "")
         lyrics = entry['lyrics']
@@ -90,10 +90,6 @@ def extract(data):
         # unique words in that song:
 
 
-
-
-
-
         print(row)
         out.write(str(entry['index']) + ";" + ";".join(row) + "\n")
         features.append(row)
@@ -121,7 +117,7 @@ def tf_idf(data):
         for word, score in sorted_words[:3]:
             print("\tWord: {}, TF-IDF: {}".format(word, round(score, 5)))
             out.write(";" + word + ";" + str(round(score, 5)))
-        out.write("\n")
+        out.write(";" + str(len(blob.words)) + "\n")
 
 idfs = {}
 
@@ -185,11 +181,28 @@ def unigram_features(data):
     print(len(unigram_index))
 
 
+def extract_small_features(data):
+    # index of author
+    authors = {}
+    index = 0
+    for entry in data:
+        if entry['artist'] not in authors:
+            authors[entry['artist']] = index
+            index += 1
+    features = []
+    out = open("data/meta_features.txt", 'w')
+    for entry in data:
+        row = []
+        row.append(authors[entry['artist']])
+        row.append(entry['year'])
+        features.append(row)
+        out.write(";".join([str(w) for w in row]) + "\n")
+
 
 if __name__ == '__main__':
     t0 = time.clock()
-    df = import_data.load_balanced_data()
+    df = import_data.load_balanced_genre_data()
     print(time.clock() - t0)
     t0 = time.clock()
-    unigram_features(df)
+    extract_small_features(df)
     print(time.clock() - t0)

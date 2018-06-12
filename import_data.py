@@ -76,6 +76,10 @@ def load_clean_data(n=-1):
 def load_balanced_data():
     return __load_sp_data__("lyrics3_0_balanced.txt")
 
+
+def load_balanced_genre_data():
+    return __load_sp_data__("lyrics3_0_balanced_genre.txt")
+
 def balance_data():
     data = load_clean_data()
     # divide data by year:
@@ -98,6 +102,45 @@ def balance_data():
 
     print(old[0])
 
+def balance_data_genre():
+    data = load_clean_data()
+    # divide data by year:
+    print(data[0])
+    rock = [d for d in data if d['genre'] == "Rock"]
+    pop = [d for d in data if d['genre'] == "Pop"]
+    hiphop = [d for d in data if d['genre'] == "Hip-Hop"]
+    metal = [d for d in data if d['genre'] == "Metal"]
+
+    samplesize = min(500, len(rock), len(pop))
+
+    import random
+    random.shuffle(rock)
+    random.shuffle(pop)
+    random.shuffle(hiphop)
+    random.shuffle(metal)
+
+    rock = rock[0:samplesize]
+    pop = pop[0:samplesize]
+    hiphop = hiphop[0:samplesize]
+    metal = metal[0:samplesize]
+
+    # save the new data set:
+    out = open("data/lyrics3_0_balanced_genre.txt", 'w')
+    for entry in pop:
+        out.write(entry['index'] + "," + entry['song'] + "," + entry['year'] + "," + entry['artist'] + "," + entry[
+            'genre'] + "," + entry['lyrics'] + "\n")
+    for entry in rock:
+        out.write(entry['index'] + "," + entry['song'] + "," + entry['year'] + "," + entry['artist'] + "," + entry[
+            'genre'] + "," + entry['lyrics'] + "\n")
+    for entry in hiphop:
+        out.write(entry['index'] + "," + entry['song'] + "," + entry['year'] + "," + entry['artist'] + "," + entry[
+            'genre'] + "," + entry['lyrics'] + "\n")
+    for entry in metal:
+        out.write(entry['index'] + "," + entry['song'] + "," + entry['year'] + "," + entry['artist'] + "," + entry[
+            'genre'] + "," + entry['lyrics'] + "\n")
+
+    print(pop[0])
+
 if __name__ == '__main__':
     # raw_data = open(dir + "/data/lyrics.csv", 'r', encoding='UTF-8').readlines()
     # load_data()
@@ -114,7 +157,7 @@ if __name__ == '__main__':
     """
     print(msg)
     # print(parse_to_better_csv(open(dir + "/data/lyrics.csv", 'r', encoding='UTF-8'). readlines()))
-    balance_data()
+    balance_data_genre()
 
 
 
