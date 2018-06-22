@@ -30,6 +30,19 @@ if __name__ == '__main__':
     # first import all the features:
     data = [line.replace("\n", "").split(";") for line in open("data/merged_genre.csv", 'r').readlines()]
     #unigram = [line.replace("\n", "").split(";") for line in open("data/features.txt", 'r').readlines()]
+    word_dict = {}
+    w_index = 0
+    for line in data:
+        if line[3] not in word_dict:
+            word_dict[line[3]] = w_index
+            w_index += 1
+        if line[5] not in word_dict:
+            word_dict[line[5]] = w_index
+            w_index += 1
+        if line[7] not in word_dict:
+            word_dict[line[7]] = w_index
+            w_index += 1
+    print(len(word_dict), word_dict)
     print(data)
     features = []
     for index, line in enumerate(data):
@@ -80,6 +93,7 @@ if __name__ == '__main__':
             row.append(0)
 
         row += [sum(row[0:3])/3]
+        row += [word_dict[line[3]], word_dict[line[5]], word_dict[line[7]]]
         #row += [float(n) for n in unigram[index]]
 
         features.append(row)
@@ -100,22 +114,42 @@ if __name__ == '__main__':
     9 = artist (index)
     10 = year
     11 = avg tfidf
+    12 = best tf-idf word (index)
+    13 = second best tf-idf word (index)
+    14 = third best tf-idf word (index)
     """
 
+    print([row[9] for row in features])
+
     # feature selection:
-    remove = range(12)
+    remove = range(15)
     perf = []
-    for trial in range(5):
+    for trial in range(10):
         p = []
         for r in remove:
             sel_features = [row[0:r] + row[r + 1:] for row in features]
             p.append(train(sel_features, labels))
         p.append(train(features, labels))
         perf.append(p)
-    plt.plot(range(13), np.mean(perf, axis=0))
+    perf = np.mean(perf, axis=0)
+    plt.plot(range(16), perf)
+    plt.show()
+    plt.figure(1)
+    plt.bar(range(16), perf - perf[-1])
     plt.show()
 
-    print(np.mean(perf, axis=0))
+    perf = []
+    for trial in range(10):
+        p = []
+        for r in remove:
+            sel_features = [[row[r]] for row in features]
+            p.append(train(sel_features, labels))
+        p.append(train(features, labels))
+        perf.append(p)
+    perf = np.mean(perf, axis=0)
+    plt.plot(range(16), perf)
+    plt.show()
+
 
     """
     Feature Analysis:
