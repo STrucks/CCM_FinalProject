@@ -84,7 +84,8 @@ if __name__ == '__main__':
         else:
             row.append(0)
         if line[15] != "": # artist (index)
-            row.append(float(line[15]))
+            row.append(0)
+            #row.append(float(line[15]))
         else:
             row.append(0)
         if line[16] != "": # year
@@ -120,11 +121,10 @@ if __name__ == '__main__':
     """
 
     print([row[9] for row in features])
-
+    """
     # feature selection:
-    remove = range(15)
     perf = []
-    for trial in range(10):
+    for trial in range(1):
         p = []
         for r in remove:
             sel_features = [row[0:r] + row[r + 1:] for row in features]
@@ -136,6 +136,36 @@ if __name__ == '__main__':
     plt.show()
     plt.figure(1)
     plt.bar(range(16), perf - perf[-1])
+    plt.show()
+    """
+    remove = range(15)
+
+    perf = []
+    for trial in range(1):
+        p = []
+
+        sel_features = [row[3:] for row in features] # [row[0:3] + row[r + 1:] for row in features]
+        p.append(train(sel_features, labels))
+        sel_features = [row[0:3] + row[6:] for row in features]
+        p.append(train(sel_features, labels))
+        sel_features = [row[0:6] + row[7:] for row in features]
+        p.append(train(sel_features, labels))
+        sel_features = [row[0:7] + row[10:] for row in features]
+        p.append(train(sel_features, labels))
+        sel_features = [row[0:10] + row[11:] for row in features]
+        p.append(train(sel_features, labels))
+        sel_features = [row[0:11] + row[12:] for row in features]
+        p.append(train(sel_features, labels))
+        sel_features = [row[0:12] for row in features]
+        p.append(train(sel_features, labels))
+
+        p.append(train(features, labels))
+        perf.append(p)
+    perf = np.mean(perf, axis=0)
+    plt.plot(range(len(perf)), perf)
+    plt.show()
+    plt.figure(1)
+    plt.bar(range(len(perf)), perf - perf[-1])
     plt.show()
 
     perf = []
