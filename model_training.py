@@ -99,8 +99,38 @@ def load_features(data):
 
 def load_baby():
     data = [line.replace("\n", "").split(",")[-2:] for line in open("data/conc_and_baby.csv", 'r').readlines()[1:]]
+    data = [[float(d[0]), float(d[1])] for d in data]
     return data
 
+def load_rake():
+    data = [line.replace("\n", "").split(",")[1:] for line in open("data/rakeResults.csv", 'r').readlines()[1:]]
+    word_dict = {}
+    w_index = 0
+    for line in data:
+        words = line[1].split(" ")
+        for w in words:
+            if w not in word_dict:
+                word_dict[w.replace("\"", "")] = w_index
+                w_index += 1
+    songs = [line.replace("\n", "").replace("\"", "").split(",")[2] for line in open("data/conc_and_baby.csv", 'r').readlines()[1:]]
+    features = []
+    for song in songs:
+        f_row = []
+        # print(song, [line[0].replace("\"", "") for line in data])
+        words = [line[1].replace("\"", "").split(" ") for line in data if line[0].replace("\"", "") == song]
+        for row in words:
+            for w in row:
+                if w == 'codenewline':
+                    continue
+                f_row.append(word_dict[w])
+        if len(f_row) < 10:
+            features.append(f_row + [0]*(10-len(f_row)))
+        elif len(f_row) > 10:
+            features.append(f_row[0:10])
+        else:
+            features.append(f_row)
+    print("f", features)
+    return features
 
 
 
@@ -109,9 +139,11 @@ if __name__ == '__main__':
     data = [line.replace("\n", "").split(";") for line in open("data/merged_genre.csv", 'r').readlines()]
     features1 = load_features(data)
     features2 = load_baby()
+    features3 = load_rake()
+    print(np.average(features3))
     features = []
     for i in range(len(features1)):
-        features.append(features1[i] + features2[i])
+        features.append(features1[i] + features2[i] + features3[i])
 
     print(features)
     # labels = [1 if int(line[1]) >= 2000 else 0 for line in data]
@@ -135,6 +167,7 @@ if __name__ == '__main__':
     14 = third best tf-idf word (index)
     15 = sum_babyness
     16 = sum_conc
+    17 - 27 = rake words
     """
 
     print([row[9] for row in features])
@@ -142,7 +175,7 @@ if __name__ == '__main__':
     # feature selection:
     remove = range(15)
     perf = []
-    LABELS = ["tf-idf scores", "#words", "#rhymes", "#wordsOfArtist", "year", "tf-idf words", "babyness", "conc", "baseline"]
+    LABELS = ["tf-idf scores", "#words", "#rhymes", "#wordsOfArtist", "year", "tf-idf words", "babyness", "conc", "rake", "baseline"]
     for trial in range(10):
         p = []
         sel_features = [row[4:] for row in features]
@@ -159,7 +192,9 @@ if __name__ == '__main__':
         p.append(train(sel_features, labels))
         sel_features = [row[0:15] + row[16:] for row in features]
         p.append(train(sel_features, labels))
-        sel_features = [row[0:16] for row in features]
+        sel_features = [row[0:16] + row[17:] for row in features]
+        p.append(train(sel_features, labels))
+        sel_features = [row[0:17] for row in features]
         p.append(train(sel_features, labels))
 
         p.append(train(features, labels))
@@ -173,6 +208,7 @@ if __name__ == '__main__':
     plt.xticks(range(len(perf)), LABELS)
     plt.show()
 
+    """
     perf = []
     for trial in range(10):
         p = []
@@ -184,6 +220,7 @@ if __name__ == '__main__':
     perf = np.mean(perf, axis=0)
     plt.plot(range(16), perf)
     plt.show()
+    """
 
 
     """
