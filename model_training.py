@@ -26,10 +26,7 @@ def plot(data, x, y, labels):
     plt.show()
 
 
-if __name__ == '__main__':
-    # first import all the features:
-    data = [line.replace("\n", "").split(";") for line in open("data/merged_genre.csv", 'r').readlines()]
-    #unigram = [line.replace("\n", "").split(";") for line in open("data/features.txt", 'r').readlines()]
+def load_features(data):
     word_dict = {}
     w_index = 0
     for line in data:
@@ -47,58 +44,76 @@ if __name__ == '__main__':
     features = []
     for index, line in enumerate(data):
         row = []
-        if line[4] != "": # top 1 tfidf score
+        if line[4] != "":  # top 1 tfidf score
             row.append(float(line[4]))
         else:
             row.append(0)
-        if line[6] != "": # top 2 tfidf score
+        if line[6] != "":  # top 2 tfidf score
             row.append(float(line[6]))
         else:
             row.append(0)
-        if line[8] != "": # top 3 tfidf score
+        if line[8] != "":  # top 3 tfidf score
             row.append(float(line[8]))
         else:
             row.append(0)
-        if line[9] != "": # number words
+        row += [sum(row[0:3]) / 3]
+        if line[9] != "":  # number words
             row.append(float(line[9]))
         else:
             row.append(0)
-        if line[10] != "": # number unique words
+        if line[10] != "":  # number unique words
             row.append(float(line[10]))
         else:
             row.append(0)
-        if line[11] != "": # ration unique words
+        if line[11] != "":  # ration unique words
             row.append(float(line[11]))
         else:
             row.append(0)
-        if line[12] != "": # number of rhymes
+        if line[12] != "":  # number of rhymes
             row.append(float(line[12]))
         else:
             row.append(0)
-        if line[13] != "": # total words of artist
+        if line[13] != "":  # total words of artist
             row.append(float(line[13]))
         else:
             row.append(0)
-        if line[14] != "": # number unique words of artist
+        if line[14] != "":  # number unique words of artist
             row.append(float(line[14]))
         else:
             row.append(0)
-        if line[15] != "": # artist (index)
+        if line[15] != "":  # artist (index)
             row.append(0)
-            #row.append(float(line[15]))
         else:
             row.append(0)
-        if line[16] != "": # year
+        if line[16] != "":  # year
             row.append(float(line[16]))
         else:
             row.append(0)
 
-        row += [sum(row[0:3])/3]
         row += [word_dict[line[3]], word_dict[line[5]], word_dict[line[7]]]
-        #row += [float(n) for n in unigram[index]]
+        # row += [float(n) for n in unigram[index]]
 
         features.append(row)
+    return features
 
+
+def load_baby():
+    data = [line.replace("\n", "").split(",")[-2:] for line in open("data/conc_and_baby.csv", 'r').readlines()[1:]]
+    return data
+
+
+
+
+if __name__ == '__main__':
+    # first import all the features:
+    data = [line.replace("\n", "").split(";") for line in open("data/merged_genre.csv", 'r').readlines()]
+    features1 = load_features(data)
+    features2 = load_baby()
+    features = []
+    for i in range(len(features1)):
+        features.append(features1[i] + features2[i])
+
+    print(features)
     # labels = [1 if int(line[1]) >= 2000 else 0 for line in data]
     labels = [d[2] for d in data]
 
@@ -106,66 +121,56 @@ if __name__ == '__main__':
     0 = top 1 tfidf score
     1 = top 2 tfidf score
     2 = top 3 tfidf score
-    3 = number words
-    4 = number unique words
-    5 = ration unique words
-    6 = number of rhymes
-    7 = total words of artist
-    8 = number unique words of artist
-    9 = artist (index)
-    10 = year
-    11 = avg tfidf
+    3 = avg tfidf
+    4 = number words
+    5 = number unique words
+    6 = ration unique words
+    7 = number of rhymes
+    8 = total words of artist
+    9 = number unique words of artist
+    10 = artist (index)
+    11 = year
     12 = best tf-idf word (index)
     13 = second best tf-idf word (index)
     14 = third best tf-idf word (index)
+    15 = sum_babyness
+    16 = sum_conc
     """
 
     print([row[9] for row in features])
-    """
+
     # feature selection:
-    perf = []
-    for trial in range(1):
-        p = []
-        for r in remove:
-            sel_features = [row[0:r] + row[r + 1:] for row in features]
-            p.append(train(sel_features, labels))
-        p.append(train(features, labels))
-        perf.append(p)
-    perf = np.mean(perf, axis=0)
-    plt.plot(range(16), perf)
-    plt.show()
-    plt.figure(1)
-    plt.bar(range(16), perf - perf[-1])
-    plt.show()
-    """
     remove = range(15)
-
     perf = []
-    for trial in range(1):
+    LABELS = ["tf-idf scores", "#words", "#rhymes", "#wordsOfArtist", "year", "tf-idf words", "babyness", "conc", "baseline"]
+    for trial in range(10):
         p = []
-
-        sel_features = [row[3:] for row in features] # [row[0:3] + row[r + 1:] for row in features]
+        sel_features = [row[4:] for row in features]
         p.append(train(sel_features, labels))
-        sel_features = [row[0:3] + row[6:] for row in features]
+        sel_features = [row[0:4] + row[7:] for row in features]
         p.append(train(sel_features, labels))
-        sel_features = [row[0:6] + row[7:] for row in features]
+        sel_features = [row[0:7] + row[8:] for row in features]
         p.append(train(sel_features, labels))
-        sel_features = [row[0:7] + row[10:] for row in features]
-        p.append(train(sel_features, labels))
-        sel_features = [row[0:10] + row[11:] for row in features]
+        sel_features = [row[0:8] + row[11:] for row in features]
         p.append(train(sel_features, labels))
         sel_features = [row[0:11] + row[12:] for row in features]
         p.append(train(sel_features, labels))
-        sel_features = [row[0:12] for row in features]
+        sel_features = [row[0:12] + row[15:] for row in features]
+        p.append(train(sel_features, labels))
+        sel_features = [row[0:15] + row[16:] for row in features]
+        p.append(train(sel_features, labels))
+        sel_features = [row[0:16] for row in features]
         p.append(train(sel_features, labels))
 
         p.append(train(features, labels))
         perf.append(p)
     perf = np.mean(perf, axis=0)
-    plt.plot(range(len(perf)), perf)
+    plt.bar(range(len(perf)), perf)
+    plt.xticks(range(len(perf)), LABELS)
     plt.show()
     plt.figure(1)
     plt.bar(range(len(perf)), perf - perf[-1])
+    plt.xticks(range(len(perf)), LABELS)
     plt.show()
 
     perf = []
